@@ -5,6 +5,10 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [state, setState] = useState('idle'); // idle | sending | sent | error
   const [error, setError] = useState('');
+  // The address the link was actually sent to, frozen at submit time — the
+  // input keeps living during the async send, so echoing live `email` could
+  // show a value the link never went to.
+  const [sentTo, setSentTo] = useState('');
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -14,6 +18,7 @@ function LoginPage() {
     setState('sending');
     const { ok, payload } = await requestLink(trimmed);
     if (ok) {
+      setSentTo(trimmed);
       setState('sent');
     } else {
       setState('error');
@@ -25,9 +30,9 @@ function LoginPage() {
     return (
       <main className="page card">
         <h1>WBS Ethogram Admin</h1>
-        <p>
-          If <strong>{email.trim()}</strong> is on the admin list, a sign-in
-          link is on its way. It expires in 15 minutes — check your inbox.
+        <p role="status">
+          If <strong>{sentTo}</strong> is on the admin list, a sign-in link is
+          on its way. It expires in 15 minutes — check your inbox.
         </p>
       </main>
     );

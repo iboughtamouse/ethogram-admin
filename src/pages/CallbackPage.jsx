@@ -30,7 +30,7 @@ function CallbackPage({ onSignedIn }) {
   async function handleSignIn() {
     setState('verifying');
     const { ok, payload } = await verifyToken(token);
-    if (ok) {
+    if (ok && payload?.data) {
       onSignedIn(payload.data);
       navigate('/', { replace: true });
     } else {

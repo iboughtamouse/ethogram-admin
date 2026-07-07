@@ -13,7 +13,7 @@ function App() {
     fetchMe().then(({ ok, payload }) => {
       if (cancelled) return;
       setSession(
-        ok
+        ok && payload?.data
           ? { status: 'signed-in', user: payload.data }
           : { status: 'signed-out', user: null }
       );
