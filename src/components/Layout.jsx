@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { logout } from '../api';
 
-function DashboardPage({ user, onSignedOut }) {
+function Layout({ user, onSignedOut, children }) {
   const [signingOut, setSigningOut] = useState(false);
 
   async function handleSignOut() {
@@ -22,22 +23,26 @@ function DashboardPage({ user, onSignedOut }) {
           </button>
         </div>
       </header>
-      <main>
-        <p>
-          You&apos;re signed in. Aviaries, vocabulary, and publishing arrive in
-          stages 3B–3C.
-        </p>
-      </main>
+      <nav className="mainnav" aria-label="Main">
+        <NavLink to="/" end>
+          Overview
+        </NavLink>
+        <NavLink to="/vocabulary">Vocabulary</NavLink>
+        <NavLink to="/versions">Versions</NavLink>
+        <NavLink to="/submissions">Submissions</NavLink>
+      </nav>
+      <main>{children}</main>
     </div>
   );
 }
 
-DashboardPage.propTypes = {
+Layout.propTypes = {
   user: PropTypes.shape({
     email: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
   }).isRequired,
   onSignedOut: PropTypes.func.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
-export default DashboardPage;
+export default Layout;

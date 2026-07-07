@@ -11,6 +11,23 @@ const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 ).replace(/\/$/, '');
 
+let unauthorizedHandler = null;
+
+/**
+ * Register a callback for mid-session expiry: a 401 from any dashboard
+ * endpoint means the server-side session is gone (expired, revoked, or the
+ * admin was deactivated), so the app should return to the login screen.
+ * Auth endpoints are excluded — /me's 401 is the normal signed-out answer at
+ * mount, and a failed token redeem is a page-level error, not session loss.
+ * Returns an unsubscribe function.
+ */
+export function onUnauthorized(handler) {
+  unauthorizedHandler = handler;
+  return () => {
+    if (unauthorizedHandler === handler) unauthorizedHandler = null;
+  };
+}
+
 export async function apiFetch(path, { method = 'GET', body } = {}) {
   let response;
   try {
@@ -25,6 +42,14 @@ export async function apiFetch(path, { method = 'GET', body } = {}) {
     });
   } catch {
     return { ok: false, status: 0, payload: null };
+  }
+
+  if (
+    response.status === 401 &&
+    path !== '/api/admin/me' &&
+    !path.startsWith('/api/admin/auth/')
+  ) {
+    unauthorizedHandler?.();
   }
 
   let payload = null;
@@ -56,4 +81,39 @@ export function fetchMe() {
 
 export function logout() {
   return apiFetch('/api/admin/auth/logout', { method: 'POST' });
+}
+
+// --- Stage 3B: read-only dashboard data ---
+
+export function fetchOverview() {
+  return apiFetch('/api/admin/overview');
+}
+
+export function fetchAviary(slug) {
+  return apiFetch(`/api/admin/aviaries/${encodeURIComponent(slug)}`);
+}
+
+export function fetchVocabulary() {
+  return apiFetch('/api/admin/vocabulary');
+}
+
+export function fetchVersions() {
+  return apiFetch('/api/admin/config-versions');
+}
+
+export function fetchSubmissions(filters = {}) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== '') params.set(key, value);
+  }
+  const suffix = params.toString() ? `?${params}` : '';
+  return apiFetch(`/api/admin/submissions${suffix}`);
+}
+
+/**
+ * Download link for a submission's Excel file. The existing public endpoint
+ * is reused (design P3-D6); the observation UUID is the capability.
+ */
+export function excelDownloadUrl(observationId) {
+  return `${API_BASE_URL}/api/observations/${encodeURIComponent(observationId)}/excel`;
 }
