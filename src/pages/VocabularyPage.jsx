@@ -6,7 +6,9 @@ import OptionsCatalog from '../components/OptionsCatalog';
 function VocabularyPage() {
   const { loading, error, data, reload } = useFetch(fetchVocabulary);
 
-  if (loading) return <p>Loading…</p>;
+  // First load only — during post-mutation reloads the stale catalog keeps
+  // rendering so open editor rows and forms survive
+  if (loading && !data) return <p>Loading…</p>;
   if (error) return <p role="alert">{error}</p>;
 
   const aviarySlugs = Object.keys(data.enablement).sort();

@@ -131,6 +131,31 @@ describe('BehaviorCatalog', () => {
     expect(onChanged).toHaveBeenCalled();
   });
 
+  it('omits insertAfter entirely for the default at-the-end placement', async () => {
+    createBehavior.mockResolvedValueOnce(ok({ value: 'preening' }));
+    const user = userEvent.setup();
+    renderCatalog();
+
+    await user.click(screen.getByText('Add a behavior'));
+    const form = screen
+      .getByRole('button', { name: 'Add behavior' })
+      .closest('form');
+    await user.type(within(form).getByLabelText('Value'), 'preening');
+    await user.type(within(form).getByLabelText('Label'), 'Preening');
+    await user.type(within(form).getByLabelText('Excel row label'), 'Preening');
+    await user.click(screen.getByRole('button', { name: 'Add behavior' }));
+
+    // The server rejects insertAfter: '' (wire-value pattern) — the default
+    // path must drop the key, not send an empty string
+    expect(createBehavior).toHaveBeenCalledTimes(1);
+    expect(createBehavior.mock.calls[0][0]).not.toHaveProperty('insertAfter');
+    expect(createBehavior.mock.calls[0][0]).toMatchObject({
+      value: 'preening',
+      group: 'Feeding',
+    });
+    expect(onChanged).toHaveBeenCalled();
+  });
+
   it('adds a behavior group with the next sort order prefilled', async () => {
     createBehaviorGroup.mockResolvedValueOnce(ok({ name: 'Vocalization' }));
     const user = userEvent.setup();

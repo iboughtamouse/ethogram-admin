@@ -68,10 +68,19 @@ function EnablementSection({ slug, enabled, onChanged }) {
   const [draft, setDraft] = useState(() => toSets(enabled));
   const { busy, error: saveError, run } = useAction();
 
-  // Resync after a reload (e.g. our own successful save)
+  // Resync only when the server-side CONTENT changed (our own save landing,
+  // or another admin's). The page fetches again after every sibling mutation
+  // and each fetch delivers new array identities — keying this effect on the
+  // prop object would clobber a half-built draft whenever, say, a perch is
+  // renamed two sections up.
+  const enabledKey = JSON.stringify(
+    ENABLEMENT_KEYS.map((key) => [...enabled[key]].sort())
+  );
   useEffect(() => {
     setDraft(toSets(enabled));
-  }, [enabled]);
+    // enabledKey is the content fingerprint of `enabled`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabledKey]);
 
   const dirty = !sameSets(draft, toSets(enabled));
 

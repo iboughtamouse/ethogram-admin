@@ -11,7 +11,10 @@ function AviaryPage() {
   const fetcher = useCallback(() => fetchAviary(slug), [slug]);
   const { loading, error, data, reload } = useFetch(fetcher);
 
-  if (loading) return <p>Loading…</p>;
+  // Only the first load blanks the page. During a reload (after any
+  // mutation) the stale data keeps rendering, so sibling sections — an open
+  // editor row, a half-built enablement draft — are not unmounted and lost
+  if (loading && !data) return <p>Loading…</p>;
   if (error) {
     return (
       <p role="alert">

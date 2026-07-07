@@ -153,4 +153,33 @@ describe('PublishPage', () => {
       /nothing to publish/i
     );
   });
+
+  it('refreshes the diff after a failed publish so new confirmations can render', async () => {
+    // Mount-time diff shows no flag changes; the server rejects the publish
+    // because the draft moved under this page. The refreshed diff must
+    // surface the now-required confirmation checkbox instead of dead-ending.
+    fetchConfigDiff
+      .mockResolvedValueOnce(diff())
+      .mockResolvedValueOnce(diff({ flagChanges: ['flying'] }));
+    publishConfig.mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      payload: {
+        success: false,
+        error:
+          'Some behaviors changed which extra fields they need — this alters how FUTURE observations are entered. Re-publish with confirmFlagChanges: true to proceed.',
+        flagChanges: ['flying'],
+      },
+    });
+    const user = userEvent.setup();
+    render(<PublishPage />);
+
+    await user.click(await screen.findByRole('button', { name: 'Publish' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/re-publish/i);
+    expect(fetchConfigDiff).toHaveBeenCalledTimes(2);
+    expect(
+      await screen.findByLabelText(/changed which extra fields they need/i)
+    ).toBeInTheDocument();
+  });
 });

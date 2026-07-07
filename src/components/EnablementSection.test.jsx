@@ -133,4 +133,40 @@ describe('EnablementSection', () => {
     expect(save).toBeDisabled();
     expect(setEnablement).not.toHaveBeenCalled();
   });
+
+  it('keeps a dirty draft when a sibling mutation delivers the same content', async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <EnablementSection
+        slug="sayyidas-cove"
+        enabled={ENABLED}
+        onChanged={onChanged}
+      />
+    );
+
+    await user.click(await screen.findByLabelText('Hopping'));
+    expect(screen.getByLabelText('Hopping')).toBeChecked();
+
+    // A perch rename two sections up reloads the page: new array identities,
+    // identical enablement content — the half-built draft must survive
+    rerender(
+      <EnablementSection
+        slug="sayyidas-cove"
+        enabled={JSON.parse(JSON.stringify(ENABLED))}
+        onChanged={onChanged}
+      />
+    );
+    expect(screen.getByLabelText('Hopping')).toBeChecked();
+
+    // But a real content change (another admin's save) resyncs the draft
+    rerender(
+      <EnablementSection
+        slug="sayyidas-cove"
+        enabled={{ ...ENABLED, behaviors: ['flying', 'resting'] }}
+        onChanged={onChanged}
+      />
+    );
+    expect(screen.getByLabelText('Hopping')).not.toBeChecked();
+    expect(screen.getByLabelText('Resting')).toBeChecked();
+  });
 });

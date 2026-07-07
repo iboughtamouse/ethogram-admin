@@ -19,7 +19,7 @@ function PublishPage() {
   const [published, setPublished] = useState(null);
   const { busy, error: publishError, run } = useAction();
 
-  if (loading) return <p>Loading…</p>;
+  if (loading && !data) return <p>Loading…</p>;
   if (error) return <p role="alert">{error}</p>;
 
   async function handlePublish(event) {
@@ -28,16 +28,20 @@ function PublishPage() {
     if (notes.trim()) body.notes = notes.trim();
     if (confirmFlags) body.confirmFlagChanges = true;
     if (confirmRows) body.confirmRowMapChanges = true;
-    await run(
+    const succeeded = await run(
       () => publishConfig(body),
       (result) => {
         setPublished(result);
         setNotes('');
         setConfirmFlags(false);
         setConfirmRows(false);
-        reload();
       }
     );
+    // Refresh the review either way: on success the diff is clean again; on
+    // failure the server may know about draft changes this page's mount-time
+    // diff didn't (e.g. a confirmation it now requires) — without the
+    // refresh the needed checkbox never renders and the page dead-ends
+    reload();
   }
 
   const needsFlagConfirm = data.flagChanges.length > 0;
