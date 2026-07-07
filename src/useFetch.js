@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
- * Fetch-on-mount for the read-only dashboard pages. `fetcher` must be a
- * stable function (module-level api helper or a useCallback); it re-runs
- * whenever the fetcher identity changes (e.g. a new slug-bound callback).
+ * Fetch-on-mount for the dashboard pages. `fetcher` must be a stable function
+ * (module-level api helper or a useCallback); it re-runs whenever the fetcher
+ * identity changes (e.g. a new slug-bound callback) or `reload()` is called
+ * (after a mutation).
  */
 export function useFetch(fetcher) {
   const [state, setState] = useState({
@@ -11,10 +12,11 @@ export function useFetch(fetcher) {
     error: null,
     data: null,
   });
+  const [nonce, setNonce] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    setState({ loading: true, error: null, data: null });
+    setState((previous) => ({ ...previous, loading: true, error: null }));
     fetcher().then(({ ok, status, payload }) => {
       if (cancelled) return;
       if (ok && payload?.data) {
@@ -30,7 +32,9 @@ export function useFetch(fetcher) {
     return () => {
       cancelled = true;
     };
-  }, [fetcher]);
+  }, [fetcher, nonce]);
 
-  return state;
+  const reload = useCallback(() => setNonce((n) => n + 1), []);
+
+  return { ...state, reload };
 }

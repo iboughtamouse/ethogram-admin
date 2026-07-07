@@ -117,3 +117,121 @@ export function fetchSubmissions(filters = {}) {
 export function excelDownloadUrl(observationId) {
   return `${API_BASE_URL}/api/observations/${encodeURIComponent(observationId)}/excel`;
 }
+
+// --- Stage 3C: editing + publish ---
+
+export function createAviary(body) {
+  return apiFetch('/api/admin/aviaries', { method: 'POST', body });
+}
+
+export function updateAviary(slug, body) {
+  return apiFetch(`/api/admin/aviaries/${encodeURIComponent(slug)}`, {
+    method: 'PATCH',
+    body,
+  });
+}
+
+export function createPerch(slug, body) {
+  return apiFetch(`/api/admin/aviaries/${encodeURIComponent(slug)}/perches`, {
+    method: 'POST',
+    body,
+  });
+}
+
+export function updatePerch(slug, value, body) {
+  return apiFetch(
+    `/api/admin/aviaries/${encodeURIComponent(slug)}/perches/${encodeURIComponent(value)}`,
+    { method: 'PATCH', body }
+  );
+}
+
+export function deletePerch(slug, value) {
+  return apiFetch(
+    `/api/admin/aviaries/${encodeURIComponent(slug)}/perches/${encodeURIComponent(value)}`,
+    { method: 'DELETE' }
+  );
+}
+
+export function createSubject(slug, body) {
+  return apiFetch(`/api/admin/aviaries/${encodeURIComponent(slug)}/subjects`, {
+    method: 'POST',
+    body,
+  });
+}
+
+export function updateSubject(id, body) {
+  return apiFetch(`/api/admin/subjects/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    body,
+  });
+}
+
+export function changeSubjectType(id, body) {
+  return apiFetch(`/api/admin/subjects/${encodeURIComponent(id)}/change-type`, {
+    method: 'POST',
+    body,
+  });
+}
+
+export function deleteSubject(id) {
+  return apiFetch(`/api/admin/subjects/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  });
+}
+
+export function createBehaviorGroup(body) {
+  return apiFetch('/api/admin/behavior-groups', { method: 'POST', body });
+}
+
+export function createBehavior(body) {
+  return apiFetch('/api/admin/behaviors', { method: 'POST', body });
+}
+
+export function updateBehavior(value, body) {
+  return apiFetch(`/api/admin/behaviors/${encodeURIComponent(value)}`, {
+    method: 'PATCH',
+    body,
+  });
+}
+
+export function deleteBehavior(value) {
+  return apiFetch(`/api/admin/behaviors/${encodeURIComponent(value)}`, {
+    method: 'DELETE',
+  });
+}
+
+export function createOption(body) {
+  return apiFetch('/api/admin/options', { method: 'POST', body });
+}
+
+export function updateOption(kind, value, body) {
+  return apiFetch(
+    `/api/admin/options/${encodeURIComponent(kind)}/${encodeURIComponent(value)}`,
+    { method: 'PATCH', body }
+  );
+}
+
+export function deleteOption(kind, value) {
+  return apiFetch(
+    `/api/admin/options/${encodeURIComponent(kind)}/${encodeURIComponent(value)}`,
+    { method: 'DELETE' }
+  );
+}
+
+export function setEnablement(slug, body) {
+  return apiFetch(
+    `/api/admin/aviaries/${encodeURIComponent(slug)}/enablement`,
+    {
+      method: 'PUT',
+      body,
+    }
+  );
+}
+
+export function fetchConfigDiff() {
+  return apiFetch('/api/admin/config/diff');
+}
+
+export function publishConfig(body) {
+  return apiFetch('/api/admin/config/publish', { method: 'POST', body });
+}
