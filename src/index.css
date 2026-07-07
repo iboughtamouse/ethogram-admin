@@ -245,3 +245,82 @@ tr.retired td {
 .filters button {
   margin-top: 0;
 }
+
+select,
+textarea {
+  padding: 0.55rem 0.7rem;
+  font-size: 1rem;
+  font-family: inherit;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+}
+
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.inline-form {
+  flex-direction: row;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0.5rem 0;
+}
+
+.inline-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.inline-form button {
+  margin-top: 0;
+}
+
+.inline-form [role='alert'] {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  margin-top: 0;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+tr.editor-row td {
+  background: #f3f1ec;
+}
+
+details {
+  margin: 0.5rem 0 1.5rem;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent-dark);
+}
+
+.checkgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.25rem 1rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.checkgrid label {
+  font-weight: 400;
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+}

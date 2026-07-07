@@ -6,6 +6,14 @@ import { fetchAviary } from '../api';
 
 vi.mock('../api', () => ({
   fetchAviary: vi.fn(),
+  // Imported by the editing sections the page composes
+  createSubject: vi.fn(),
+  updateSubject: vi.fn(),
+  changeSubjectType: vi.fn(),
+  deleteSubject: vi.fn(),
+  createPerch: vi.fn(),
+  updatePerch: vi.fn(),
+  deletePerch: vi.fn(),
 }));
 
 const AVIARY = {
@@ -32,6 +40,7 @@ const AVIARY = {
       ],
       subjects: [
         {
+          id: '11111111-1111-4111-8111-111111111111',
           name: 'Sayyida',
           species: 'Barred Owl',
           type: 'foster_parent',
@@ -40,6 +49,7 @@ const AVIARY = {
           current: true,
         },
         {
+          id: '22222222-2222-4222-8222-222222222222',
           name: '187(B)',
           species: 'Barred Owl',
           type: 'juvenile',
