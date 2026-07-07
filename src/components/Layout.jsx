@@ -28,6 +28,7 @@ function Layout({ user, onSignedOut, children }) {
           Overview
         </NavLink>
         <NavLink to="/vocabulary">Vocabulary</NavLink>
+        <NavLink to="/publish">Publish</NavLink>
         <NavLink to="/versions">Versions</NavLink>
         <NavLink to="/submissions">Submissions</NavLink>
       </nav>

@@ -2,10 +2,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import AviaryPage from './AviaryPage';
-import { fetchAviary } from '../api';
+import { fetchAviary, fetchVocabulary } from '../api';
 
 vi.mock('../api', () => ({
   fetchAviary: vi.fn(),
+  // Imported by the editing sections the page composes
+  createSubject: vi.fn(),
+  updateSubject: vi.fn(),
+  changeSubjectType: vi.fn(),
+  deleteSubject: vi.fn(),
+  createPerch: vi.fn(),
+  updatePerch: vi.fn(),
+  deletePerch: vi.fn(),
+  fetchVocabulary: vi.fn(),
+  setEnablement: vi.fn(),
 }));
 
 const AVIARY = {
@@ -32,6 +42,7 @@ const AVIARY = {
       ],
       subjects: [
         {
+          id: '11111111-1111-4111-8111-111111111111',
           name: 'Sayyida',
           species: 'Barred Owl',
           type: 'foster_parent',
@@ -40,6 +51,7 @@ const AVIARY = {
           current: true,
         },
         {
+          id: '22222222-2222-4222-8222-222222222222',
           name: '187(B)',
           species: 'Barred Owl',
           type: 'juvenile',
@@ -71,6 +83,25 @@ function renderAt(slug) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // The enablement editor fetches the catalog on mount
+  fetchVocabulary.mockResolvedValue({
+    ok: true,
+    status: 200,
+    payload: {
+      success: true,
+      data: {
+        behaviorGroups: [],
+        behaviors: [],
+        options: {
+          object: [],
+          object_interaction: [],
+          animal: [],
+          animal_interaction: [],
+        },
+        enablement: {},
+      },
+    },
+  });
 });
 
 describe('AviaryPage', () => {
