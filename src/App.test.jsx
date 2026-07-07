@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
-import { fetchMe, logout, fetchOverview } from './api';
+import { fetchMe, logout, fetchOverview, onUnauthorized } from './api';
 
 vi.mock('./api', () => ({
   fetchMe: vi.fn(),
@@ -16,6 +16,7 @@ vi.mock('./api', () => ({
   fetchVersions: vi.fn(),
   fetchSubmissions: vi.fn(),
   excelDownloadUrl: vi.fn(() => '#'),
+  onUnauthorized: vi.fn(() => () => {}),
 }));
 
 const OVERVIEW = {
@@ -95,6 +96,33 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: 'Sign out' }));
 
     expect(logout).toHaveBeenCalled();
+    expect(await screen.findByLabelText('Email')).toBeInTheDocument();
+  });
+
+  it('returns to the login page when a dashboard request reports session loss', async () => {
+    let sessionLossHandler;
+    onUnauthorized.mockImplementation((handler) => {
+      sessionLossHandler = handler;
+      return () => {};
+    });
+    fetchMe.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      payload: {
+        success: true,
+        data: { email: 'a@b.c', displayName: 'Mouse' },
+      },
+    });
+    render(
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
+    );
+    expect(await screen.findByText(/signed in as mouse/i)).toBeInTheDocument();
+
+    // Simulate what apiFetch does when a dashboard endpoint returns 401
+    act(() => sessionLossHandler());
+
     expect(await screen.findByLabelText('Email')).toBeInTheDocument();
   });
 });

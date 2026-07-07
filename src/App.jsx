@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { fetchMe } from './api';
+import { fetchMe, onUnauthorized } from './api';
 import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
 import CallbackPage from './pages/CallbackPage';
@@ -36,6 +36,11 @@ function App() {
     () => setSession({ status: 'signed-out', user: null }),
     []
   );
+
+  // A 401 from any dashboard request means the session died mid-browse
+  // (expired, revoked, deactivated) — drop back to the login screen instead
+  // of showing per-page errors under a stale "Signed in as …" header
+  useEffect(() => onUnauthorized(handleSignedOut), [handleSignedOut]);
 
   if (session.status === 'loading') {
     return (

@@ -1,5 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { apiFetch, requestLink, verifyToken, fetchMe, logout } from './api';
+import {
+  apiFetch,
+  requestLink,
+  verifyToken,
+  fetchMe,
+  logout,
+  onUnauthorized,
+} from './api';
 
 function jsonResponse(payload, { ok = true, status = 200 } = {}) {
   return { ok, status, json: async () => payload };
@@ -69,6 +76,55 @@ describe('apiFetch', () => {
     });
     const result = await apiFetch('/x');
     expect(result).toEqual({ ok: true, status: 204, payload: null });
+  });
+});
+
+describe('onUnauthorized', () => {
+  it('fires for a 401 from a dashboard endpoint', async () => {
+    const handler = vi.fn();
+    const unsubscribe = onUnauthorized(handler);
+    fetch.mockResolvedValueOnce(
+      jsonResponse(
+        { success: false, error: 'Not signed in' },
+        { ok: false, status: 401 }
+      )
+    );
+
+    await apiFetch('/api/admin/overview');
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    unsubscribe();
+  });
+
+  it.each(['/api/admin/me', '/api/admin/auth/verify'])(
+    'does not fire for a 401 from %s',
+    async (path) => {
+      const handler = vi.fn();
+      const unsubscribe = onUnauthorized(handler);
+      fetch.mockResolvedValueOnce(
+        jsonResponse(
+          { success: false, error: 'nope' },
+          { ok: false, status: 401 }
+        )
+      );
+
+      await apiFetch(path);
+
+      expect(handler).not.toHaveBeenCalled();
+      unsubscribe();
+    }
+  );
+
+  it('does not fire after unsubscribe', async () => {
+    const handler = vi.fn();
+    onUnauthorized(handler)();
+    fetch.mockResolvedValueOnce(
+      jsonResponse({ success: false }, { ok: false, status: 401 })
+    );
+
+    await apiFetch('/api/admin/overview');
+
+    expect(handler).not.toHaveBeenCalled();
   });
 });
 
