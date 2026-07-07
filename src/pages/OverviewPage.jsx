@@ -23,7 +23,9 @@ function OverviewPage() {
           <span>No config published yet.</span>
         )}
         {unpublishedChanges ? (
-          <span className="badge badge-warn">Unpublished changes</span>
+          <Link to="/publish" className="badge badge-warn">
+            Unpublished changes — review &amp; publish
+          </Link>
         ) : (
           <span className="badge">Up to date</span>
         )}

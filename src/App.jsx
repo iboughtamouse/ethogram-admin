@@ -9,6 +9,7 @@ import AviaryPage from './pages/AviaryPage';
 import VocabularyPage from './pages/VocabularyPage';
 import VersionsPage from './pages/VersionsPage';
 import SubmissionsPage from './pages/SubmissionsPage';
+import PublishPage from './pages/PublishPage';
 
 function App() {
   const [session, setSession] = useState({ status: 'loading', user: null });
@@ -68,6 +69,7 @@ function App() {
         <Route path="/" element={<OverviewPage />} />
         <Route path="/aviaries/:slug" element={<AviaryPage />} />
         <Route path="/vocabulary" element={<VocabularyPage />} />
+        <Route path="/publish" element={<PublishPage />} />
         <Route path="/versions" element={<VersionsPage />} />
         <Route path="/submissions" element={<SubmissionsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />

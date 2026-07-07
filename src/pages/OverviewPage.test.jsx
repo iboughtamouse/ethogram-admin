@@ -69,7 +69,10 @@ describe('OverviewPage', () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText('Unpublished changes')).toBeInTheDocument();
+    const badge = await screen.findByRole('link', {
+      name: /unpublished changes — review & publish/i,
+    });
+    expect(badge).toHaveAttribute('href', '/publish');
   });
 
   it('surfaces API errors', async () => {
