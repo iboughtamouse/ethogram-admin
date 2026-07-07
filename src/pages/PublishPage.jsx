@@ -28,7 +28,7 @@ function PublishPage() {
     if (notes.trim()) body.notes = notes.trim();
     if (confirmFlags) body.confirmFlagChanges = true;
     if (confirmRows) body.confirmRowMapChanges = true;
-    const succeeded = await run(
+    await run(
       () => publishConfig(body),
       (result) => {
         setPublished(result);
