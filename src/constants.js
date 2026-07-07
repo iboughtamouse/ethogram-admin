@@ -15,3 +15,14 @@ export const SUBJECT_TYPE_LABELS = {
   juvenile: 'Juvenile',
   baby: 'Baby',
 };
+
+// The six behavior requires-flags, with the plain-language phrasing the
+// design asks for ("needs a location?", design §5)
+export const BEHAVIOR_FLAG_FIELDS = [
+  ['requiresLocation', 'Needs a location'],
+  ['requiresObject', 'Needs an object'],
+  ['requiresObjectInteraction', 'Needs an object interaction type'],
+  ['requiresAnimal', 'Needs an animal'],
+  ['requiresAnimalInteraction', 'Needs an animal interaction type'],
+  ['requiresDescription', 'Needs a description'],
+];

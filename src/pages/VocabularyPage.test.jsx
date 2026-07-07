@@ -5,6 +5,14 @@ import { fetchVocabulary } from '../api';
 
 vi.mock('../api', () => ({
   fetchVocabulary: vi.fn(),
+  // Imported by the catalog components the page composes
+  createBehavior: vi.fn(),
+  createBehaviorGroup: vi.fn(),
+  updateBehavior: vi.fn(),
+  deleteBehavior: vi.fn(),
+  createOption: vi.fn(),
+  updateOption: vi.fn(),
+  deleteOption: vi.fn(),
 }));
 
 const VOCAB = {
