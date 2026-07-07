@@ -57,3 +57,38 @@ export function fetchMe() {
 export function logout() {
   return apiFetch('/api/admin/auth/logout', { method: 'POST' });
 }
+
+// --- Stage 3B: read-only dashboard data ---
+
+export function fetchOverview() {
+  return apiFetch('/api/admin/overview');
+}
+
+export function fetchAviary(slug) {
+  return apiFetch(`/api/admin/aviaries/${encodeURIComponent(slug)}`);
+}
+
+export function fetchVocabulary() {
+  return apiFetch('/api/admin/vocabulary');
+}
+
+export function fetchVersions() {
+  return apiFetch('/api/admin/config-versions');
+}
+
+export function fetchSubmissions(filters = {}) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== '') params.set(key, value);
+  }
+  const suffix = params.toString() ? `?${params}` : '';
+  return apiFetch(`/api/admin/submissions${suffix}`);
+}
+
+/**
+ * Download link for a submission's Excel file. The existing public endpoint
+ * is reused (design P3-D6); the observation UUID is the capability.
+ */
+export function excelDownloadUrl(observationId) {
+  return `${API_BASE_URL}/api/observations/${encodeURIComponent(observationId)}/excel`;
+}
