@@ -4,7 +4,7 @@ import { fetchAviary } from '../api';
 import { useFetch } from '../useFetch';
 import SubjectsSection from '../components/SubjectsSection';
 import PerchesSection from '../components/PerchesSection';
-import { OPTION_KIND_LABELS } from '../constants';
+import EnablementSection from '../components/EnablementSection';
 
 function AviaryPage() {
   const { slug } = useParams();
@@ -26,6 +26,10 @@ function AviaryPage() {
         {data.name}
         {!data.isActive && <span className="badge badge-warn">Inactive</span>}
       </h2>
+      <p className="hint">
+        Edits here change the draft config — nothing observers see changes until
+        it is published.
+      </p>
 
       <SubjectsSection
         slug={slug}
@@ -47,15 +51,12 @@ function AviaryPage() {
 
       <PerchesSection slug={slug} perches={data.perches} onChanged={reload} />
 
-      <h3>Enabled vocabulary</h3>
-      <p>{data.enabled.behaviors.length} behaviors enabled.</p>
-      <ul>
-        {Object.entries(OPTION_KIND_LABELS).map(([kind, label]) => (
-          <li key={kind}>
-            {label}: {data.enabled[kind].length}
-          </li>
-        ))}
-      </ul>
+      <EnablementSection
+        slug={slug}
+        enabled={data.enabled}
+        onChanged={reload}
+      />
+
       <p>
         Full catalog and enablement matrix:{' '}
         <Link to="/vocabulary">Vocabulary</Link>.

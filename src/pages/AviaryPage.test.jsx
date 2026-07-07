@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import AviaryPage from './AviaryPage';
-import { fetchAviary } from '../api';
+import { fetchAviary, fetchVocabulary } from '../api';
 
 vi.mock('../api', () => ({
   fetchAviary: vi.fn(),
@@ -14,6 +14,8 @@ vi.mock('../api', () => ({
   createPerch: vi.fn(),
   updatePerch: vi.fn(),
   deletePerch: vi.fn(),
+  fetchVocabulary: vi.fn(),
+  setEnablement: vi.fn(),
 }));
 
 const AVIARY = {
@@ -81,6 +83,25 @@ function renderAt(slug) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // The enablement editor fetches the catalog on mount
+  fetchVocabulary.mockResolvedValue({
+    ok: true,
+    status: 200,
+    payload: {
+      success: true,
+      data: {
+        behaviorGroups: [],
+        behaviors: [],
+        options: {
+          object: [],
+          object_interaction: [],
+          animal: [],
+          animal_interaction: [],
+        },
+        enablement: {},
+      },
+    },
+  });
 });
 
 describe('AviaryPage', () => {
