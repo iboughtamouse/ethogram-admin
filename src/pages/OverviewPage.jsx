@@ -33,6 +33,10 @@ function OverviewPage() {
 
       <h2>Aviaries</h2>
       <div className="cards">
+        <Link to="/aviaries/new" className="card-link card-new">
+          <h3>+ New aviary</h3>
+          <p>Create a new form — blank or from a template</p>
+        </Link>
         {aviaries.map((aviary) => (
           <Link
             key={aviary.slug}

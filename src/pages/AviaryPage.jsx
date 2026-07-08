@@ -5,6 +5,8 @@ import { useFetch } from '../useFetch';
 import SubjectsSection from '../components/SubjectsSection';
 import PerchesSection from '../components/PerchesSection';
 import EnablementSection from '../components/EnablementSection';
+import DiagramsSection from '../components/DiagramsSection';
+import ActivationControl from '../components/ActivationControl';
 
 function AviaryPage() {
   const { slug } = useParams();
@@ -25,10 +27,12 @@ function AviaryPage() {
 
   return (
     <>
-      <h2>
-        {data.name}
-        {!data.isActive && <span className="badge badge-warn">Inactive</span>}
-      </h2>
+      <h2>{data.name}</h2>
+      <ActivationControl
+        slug={slug}
+        isActive={data.isActive}
+        onChanged={reload}
+      />
       <p className="hint">
         Edits here change the draft config — nothing observers see changes until
         it is published.
@@ -40,17 +44,11 @@ function AviaryPage() {
         onChanged={reload}
       />
 
-      <h3>Perch diagrams</h3>
-      <div className="diagrams">
-        {data.diagrams.map((diagram) => (
-          <figure key={diagram.label}>
-            <a href={diagram.url} target="_blank" rel="noreferrer">
-              <img src={diagram.url} alt={`Perch diagram: ${diagram.label}`} />
-            </a>
-            <figcaption>{diagram.label}</figcaption>
-          </figure>
-        ))}
-      </div>
+      <DiagramsSection
+        slug={slug}
+        diagrams={data.diagrams}
+        onChanged={reload}
+      />
 
       <PerchesSection slug={slug} perches={data.perches} onChanged={reload} />
 
