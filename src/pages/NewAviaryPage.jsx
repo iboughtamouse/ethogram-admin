@@ -43,9 +43,10 @@ function NewAviaryPage() {
     <>
       <h2>New aviary</h2>
       <p className="hint">
-        This creates a draft — observers see nothing until you publish. The slug
-        becomes the aviary's permanent identity in recorded data and cannot be
-        changed later; the display name can.
+        This creates an <strong>inactive draft</strong> — observers won&apos;t
+        see it until you finish setting it up, activate it, and publish. The
+        slug becomes the aviary&apos;s permanent identity in recorded data and
+        cannot be changed later; the display name can.
       </p>
       <form onSubmit={handleSubmit}>
         <label htmlFor="aviary-name">Name</label>

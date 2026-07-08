@@ -190,6 +190,38 @@ button:disabled {
   color: var(--muted);
 }
 
+.activation {
+  margin: 0.5rem 0 1rem;
+}
+
+.activation p {
+  margin: 0;
+}
+
+.activation button {
+  margin: 0 0 0 0.6rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.activation-inactive {
+  padding: 0.75rem 1rem;
+  background: #f6e8d5;
+  border: 1px solid #e3cba4;
+  border-radius: 6px;
+}
+
+button.linkish {
+  background: none;
+  color: var(--accent-dark);
+  padding: 0;
+  text-decoration: underline;
+}
+
+button.linkish:hover:not(:disabled) {
+  background: none;
+}
+
 .diagrams .actions {
   margin-top: 0.35rem;
 }

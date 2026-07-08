@@ -6,6 +6,7 @@ import SubjectsSection from '../components/SubjectsSection';
 import PerchesSection from '../components/PerchesSection';
 import EnablementSection from '../components/EnablementSection';
 import DiagramsSection from '../components/DiagramsSection';
+import ActivationControl from '../components/ActivationControl';
 
 function AviaryPage() {
   const { slug } = useParams();
@@ -26,10 +27,12 @@ function AviaryPage() {
 
   return (
     <>
-      <h2>
-        {data.name}
-        {!data.isActive && <span className="badge badge-warn">Inactive</span>}
-      </h2>
+      <h2>{data.name}</h2>
+      <ActivationControl
+        slug={slug}
+        isActive={data.isActive}
+        onChanged={reload}
+      />
       <p className="hint">
         Edits here change the draft config — nothing observers see changes until
         it is published.

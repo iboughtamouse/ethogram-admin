@@ -6,6 +6,7 @@ import {
   fetchMe,
   logout,
   onUnauthorized,
+  uploadToBucket,
 } from './api';
 
 function jsonResponse(payload, { ok = true, status = 200 } = {}) {
@@ -144,5 +145,45 @@ describe('endpoint helpers', () => {
     const [url, options] = fetch.mock.calls[0];
     expect(url).toBe(`http://localhost:3000${path}`);
     expect(options.method).toBe(method);
+  });
+});
+
+describe('uploadToBucket', () => {
+  it('PUTs the bytes with the two signed headers the presigned URL requires', async () => {
+    fetch.mockResolvedValueOnce({ ok: true, status: 200 });
+    const file = new File(['x'], 'd.webp', { type: 'image/webp' });
+
+    const result = await uploadToBucket(
+      'https://bucket.example/presigned',
+      file
+    );
+
+    const [url, options] = fetch.mock.calls[0];
+    expect(url).toBe('https://bucket.example/presigned');
+    expect(options.method).toBe('PUT');
+    // Both are bound into the URL signature — Content-Type binds the declared
+    // type, If-None-Match:* makes R2 refuse to overwrite an existing object
+    expect(options.headers['Content-Type']).toBe('image/webp');
+    expect(options.headers['If-None-Match']).toBe('*');
+    expect(options.body).toBe(file);
+    expect(result).toEqual({ ok: true, status: 200 });
+  });
+
+  it('reports failure (e.g. a 412 overwrite refusal) without throwing', async () => {
+    fetch.mockResolvedValueOnce({ ok: false, status: 412 });
+    const result = await uploadToBucket(
+      'https://bucket.example/presigned',
+      new File(['x'], 'd')
+    );
+    expect(result).toEqual({ ok: false, status: 412 });
+  });
+
+  it('returns ok:false on a network error', async () => {
+    fetch.mockRejectedValueOnce(new Error('offline'));
+    const result = await uploadToBucket(
+      'https://bucket.example/presigned',
+      new File(['x'], 'd')
+    );
+    expect(result).toEqual({ ok: false, status: 0 });
   });
 });

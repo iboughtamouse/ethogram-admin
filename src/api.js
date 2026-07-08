@@ -253,16 +253,21 @@ export function setDiagrams(slug, body) {
 }
 
 /**
- * The browser-to-bucket leg: PUT the image bytes to the presigned URL. The
- * Content-Type header must be exactly the type the mint request declared —
- * it is bound into the URL's signature. No credentials ride along; the
- * signature in the URL is the authorization.
+ * The browser-to-bucket leg: PUT the image bytes to the presigned URL. Both
+ * headers are bound into the URL's signature, so they must be sent exactly:
+ *   - Content-Type: the type the mint request declared
+ *   - If-None-Match: '*' — tells R2 to refuse the write (412) if the object
+ *     already exists, so a re-used/racing URL can never overwrite a diagram
+ *     already frozen into published history
+ * No credentials ride along; the signature in the URL is the authorization.
+ * A 412 surfaces as ok:false — the caller re-mints (which yields a fresh
+ * version) rather than clobbering an existing object.
  */
 export async function uploadToBucket(uploadUrl, file) {
   try {
     const response = await fetch(uploadUrl, {
       method: 'PUT',
-      headers: { 'Content-Type': file.type },
+      headers: { 'Content-Type': file.type, 'If-None-Match': '*' },
       body: file,
     });
     return { ok: response.ok, status: response.status };

@@ -19,6 +19,7 @@ vi.mock('../api', () => ({
   mintDiagramUpload: vi.fn(),
   setDiagrams: vi.fn(),
   uploadToBucket: vi.fn(),
+  updateAviary: vi.fn(),
 }));
 
 const AVIARY = {
