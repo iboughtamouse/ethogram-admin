@@ -8,6 +8,7 @@ import {
 } from '../api';
 import { useAction } from '../useAction';
 import { BEHAVIOR_FLAG_FIELDS } from '../constants';
+import ConfirmButton from './ConfirmButton';
 
 const FLAG_SUMMARY_LABELS = {
   requiresLocation: 'location',
@@ -337,14 +338,9 @@ function BehaviorCatalog({
     );
   }
 
+  // The published-behavior case doesn't need pre-warning here: the API
+  // refuses it with a friendly "retire it instead" message shown above
   async function handleRemove(behavior) {
-    if (
-      !window.confirm(
-        `Remove draft behavior "${behavior.label}"? Behaviors already in a published config can't be removed — retire them instead.`
-      )
-    ) {
-      return;
-    }
     await runAction(() => deleteBehavior(behavior.value), onChanged);
   }
 
@@ -405,12 +401,11 @@ function BehaviorCatalog({
                         >
                           {behavior.retired ? 'Unretire' : 'Retire'}
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => handleRemove(behavior)}
-                        >
-                          Remove
-                        </button>
+                        <ConfirmButton
+                          label="Remove"
+                          question={`Remove "${behavior.label}"?`}
+                          onConfirm={() => handleRemove(behavior)}
+                        />
                       </td>
                     </tr>
                     {editing === behavior.value && (

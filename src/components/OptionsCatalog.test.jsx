@@ -118,7 +118,6 @@ describe('OptionsCatalog', () => {
   });
 
   it("surfaces the API's refusal when removing a published option", async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     deleteOption.mockResolvedValueOnce({
       ok: false,
       status: 409,
@@ -131,7 +130,10 @@ describe('OptionsCatalog', () => {
     const user = userEvent.setup();
     renderCatalog();
 
+    // In-app confirm (SM-1): arm, then confirm
     await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
+    expect(screen.getByText('Remove "Ball"?')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
     expect(deleteOption).toHaveBeenCalledWith('object', 'ball');
     expect(await screen.findByRole('alert')).toHaveTextContent(

@@ -215,7 +215,6 @@ describe('BehaviorCatalog', () => {
   });
 
   it("surfaces the API's refusal when removing a published behavior", async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     deleteBehavior.mockResolvedValueOnce({
       ok: false,
       status: 409,
@@ -228,7 +227,10 @@ describe('BehaviorCatalog', () => {
     const user = userEvent.setup();
     renderCatalog();
 
+    // In-app confirm (SM-1): arm, then confirm
     await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
+    expect(screen.getByText('Remove "Feeding on prey"?')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
     expect(deleteBehavior).toHaveBeenCalledWith('feeding_prey');
     expect(await screen.findByRole('alert')).toHaveTextContent(

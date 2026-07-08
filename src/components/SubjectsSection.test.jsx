@@ -143,7 +143,6 @@ describe('SubjectsSection', () => {
   });
 
   it("surfaces the API's refusal when removing a published episode", async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     deleteSubject.mockResolvedValueOnce({
       ok: false,
       status: 409,
@@ -156,7 +155,10 @@ describe('SubjectsSection', () => {
     const user = userEvent.setup();
     renderSection();
 
+    // In-app confirm (SM-1): arm, then confirm
     await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
+    expect(screen.getByText("Remove Sayyida's episode?")).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
     expect(deleteSubject).toHaveBeenCalledWith(SAYYIDA_ID);
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -165,12 +167,12 @@ describe('SubjectsSection', () => {
     expect(onChanged).not.toHaveBeenCalled();
   });
 
-  it('does nothing when the remove confirmation is declined', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(false);
+  it('does nothing when the remove confirmation is cancelled', async () => {
     const user = userEvent.setup();
     renderSection();
 
     await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(deleteSubject).not.toHaveBeenCalled();
   });

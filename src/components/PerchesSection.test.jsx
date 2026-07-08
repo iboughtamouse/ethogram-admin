@@ -101,7 +101,6 @@ describe('PerchesSection', () => {
   });
 
   it("surfaces the API's refusal when removing a published perch", async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     deletePerch.mockResolvedValueOnce({
       ok: false,
       status: 409,
@@ -114,7 +113,10 @@ describe('PerchesSection', () => {
     const user = userEvent.setup();
     renderSection();
 
+    // In-app confirm (SM-1): arm, then confirm
     await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
+    expect(screen.getByText('Remove perch "12"?')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
     expect(deletePerch).toHaveBeenCalledWith('sayyidas-cove', '12');
     expect(await screen.findByRole('alert')).toHaveTextContent(
