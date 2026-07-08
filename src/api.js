@@ -235,3 +235,38 @@ export function fetchConfigDiff() {
 export function publishConfig(body) {
   return apiFetch('/api/admin/config/publish', { method: 'POST', body });
 }
+
+// --- Stage 3D: diagram uploads + New Aviary ---
+
+export function mintDiagramUpload(body) {
+  return apiFetch('/api/admin/uploads/perch-diagram', {
+    method: 'POST',
+    body,
+  });
+}
+
+export function setDiagrams(slug, body) {
+  return apiFetch(`/api/admin/aviaries/${encodeURIComponent(slug)}/diagrams`, {
+    method: 'PUT',
+    body,
+  });
+}
+
+/**
+ * The browser-to-bucket leg: PUT the image bytes to the presigned URL. The
+ * Content-Type header must be exactly the type the mint request declared —
+ * it is bound into the URL's signature. No credentials ride along; the
+ * signature in the URL is the authorization.
+ */
+export async function uploadToBucket(uploadUrl, file) {
+  try {
+    const response = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type },
+      body: file,
+    });
+    return { ok: response.ok, status: response.status };
+  } catch {
+    return { ok: false, status: 0 };
+  }
+}

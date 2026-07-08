@@ -185,6 +185,20 @@ button:disabled {
   border-color: var(--accent);
 }
 
+.card-new {
+  border-style: dashed;
+  color: var(--muted);
+}
+
+.diagrams .actions {
+  margin-top: 0.35rem;
+}
+
+input[type='file'] {
+  padding: 0.35rem 0;
+  border: none;
+}
+
 .card-link h3,
 .card-link p {
   margin: 0 0 0.35rem;
