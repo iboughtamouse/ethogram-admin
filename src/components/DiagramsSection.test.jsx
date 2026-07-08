@@ -208,13 +208,16 @@ describe('DiagramsSection', () => {
     });
   });
 
-  it('removes after confirmation, submitting the remaining list', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
+  it('removes after in-app confirmation, submitting the remaining list', async () => {
     setDiagrams.mockResolvedValueOnce(ok());
     const user = userEvent.setup();
     renderSection();
 
+    // In-app confirm (SM-1): arm, then confirm
     await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
+    expect(screen.getByText('Remove "East"?')).toBeInTheDocument();
+    expect(setDiagrams).not.toHaveBeenCalled();
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
     expect(setDiagrams).toHaveBeenCalledWith('sayyidas-cove', {
       diagrams: [{ url: DIAGRAMS[1].url, label: 'West' }],

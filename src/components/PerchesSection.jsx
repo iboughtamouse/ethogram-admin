@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { createPerch, updatePerch, deletePerch } from '../api';
 import { useAction } from '../useAction';
+import ConfirmButton from './ConfirmButton';
 
 const perchShape = PropTypes.shape({
   value: PropTypes.string.isRequired,
@@ -152,14 +153,9 @@ function PerchesSection({ slug, perches, onChanged }) {
     );
   }
 
+  // The published-perch case doesn't need pre-warning here: the API refuses
+  // it with a friendly "retire it instead" message the section displays
   async function handleRemove(perch) {
-    if (
-      !window.confirm(
-        `Remove draft perch "${perch.value}"? Perches already in a published config can't be removed — retire them instead.`
-      )
-    ) {
-      return;
-    }
     await runAction(() => deletePerch(slug, perch.value), onChanged);
   }
 
@@ -195,9 +191,11 @@ function PerchesSection({ slug, perches, onChanged }) {
                   <button type="button" onClick={() => handleRetire(perch)}>
                     {perch.retired ? 'Unretire' : 'Retire'}
                   </button>
-                  <button type="button" onClick={() => handleRemove(perch)}>
-                    Remove
-                  </button>
+                  <ConfirmButton
+                    label="Remove"
+                    question={`Remove perch "${perch.value}"?`}
+                    onConfirm={() => handleRemove(perch)}
+                  />
                 </td>
               </tr>
               {editing === perch.value && (

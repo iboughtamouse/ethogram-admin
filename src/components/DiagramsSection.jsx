@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { mintDiagramUpload, setDiagrams, uploadToBucket } from '../api';
 import { useAction } from '../useAction';
+import ConfirmButton from './ConfirmButton';
 
 const ACCEPTED_TYPES = ['image/webp', 'image/png', 'image/jpeg'];
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -192,14 +193,10 @@ function DiagramsSection({ slug, diagrams, onChanged }) {
     await runAction(() => setDiagrams(slug, { diagrams: next }), onChanged);
   }
 
+  // Removal only detaches from the draft — published versions keep their
+  // frozen copy (see the section doc comment); a short in-place confirm is
+  // enough, and the server's message covers any refusal
   async function handleRemove(index) {
-    if (
-      !window.confirm(
-        `Remove the "${plain[index].label}" diagram from this aviary? Published versions keep their copy; this only changes the draft.`
-      )
-    ) {
-      return;
-    }
     const next = plain.filter((_, i) => i !== index);
     await runAction(() => setDiagrams(slug, { diagrams: next }), onChanged);
   }
@@ -233,9 +230,11 @@ function DiagramsSection({ slug, diagrams, onChanged }) {
               >
                 Later →
               </button>
-              <button type="button" onClick={() => handleRemove(index)}>
-                Remove
-              </button>
+              <ConfirmButton
+                label="Remove"
+                question={`Remove "${diagram.label}"?`}
+                onConfirm={() => handleRemove(index)}
+              />
             </div>
             {relabeling === index && (
               <RelabelForm

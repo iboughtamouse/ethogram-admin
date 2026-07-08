@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { createOption, updateOption, deleteOption } from '../api';
 import { useAction } from '../useAction';
 import { OPTION_KIND_LABELS } from '../constants';
+import ConfirmButton from './ConfirmButton';
 
 const optionShape = PropTypes.shape({
   value: PropTypes.string.isRequired,
@@ -123,14 +124,9 @@ function OptionsCatalog({ options, aviarySlugs, enablement, onChanged }) {
     );
   }
 
+  // The published-option case doesn't need pre-warning here: the API refuses
+  // it with a friendly "retire it instead" message shown above
   async function handleRemove(kind, option) {
-    if (
-      !window.confirm(
-        `Remove draft option "${option.label}"? Options already in a published config can't be removed — retire them instead.`
-      )
-    ) {
-      return;
-    }
     await runAction(() => deleteOption(kind, option.value), onChanged);
   }
 
@@ -182,12 +178,11 @@ function OptionsCatalog({ options, aviarySlugs, enablement, onChanged }) {
                       >
                         {option.retired ? 'Unretire' : 'Retire'}
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleRemove(kind, option)}
-                      >
-                        Remove
-                      </button>
+                      <ConfirmButton
+                        label="Remove"
+                        question={`Remove "${option.label}"?`}
+                        onConfirm={() => handleRemove(kind, option)}
+                      />
                     </td>
                   </tr>
                   {editing === `${kind}/${option.value}` && (
