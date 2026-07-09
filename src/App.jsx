@@ -11,6 +11,7 @@ import VersionsPage from './pages/VersionsPage';
 import SubmissionsPage from './pages/SubmissionsPage';
 import PublishPage from './pages/PublishPage';
 import NewAviaryPage from './pages/NewAviaryPage';
+import AdminsPage from './pages/AdminsPage';
 
 function App() {
   const [session, setSession] = useState({ status: 'loading', user: null });
@@ -74,6 +75,10 @@ function App() {
         <Route path="/publish" element={<PublishPage />} />
         <Route path="/versions" element={<VersionsPage />} />
         <Route path="/submissions" element={<SubmissionsPage />} />
+        <Route
+          path="/admins"
+          element={<AdminsPage currentUser={session.user} />}
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>
