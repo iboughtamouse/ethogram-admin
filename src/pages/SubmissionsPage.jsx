@@ -71,7 +71,6 @@ function SubmissionsPage() {
                 <th>Time</th>
                 <th>Observer</th>
                 <th>Aviary</th>
-                <th>Mode</th>
                 <th>Slots</th>
                 <th>Submitted</th>
                 <th>Excel</th>
@@ -86,7 +85,6 @@ function SubmissionsPage() {
                   </td>
                   <td>{item.observerName}</td>
                   <td>{item.aviaryName}</td>
-                  <td>{item.mode}</td>
                   <td>{item.slotCount}</td>
                   <td>{new Date(item.submittedAt).toLocaleString()}</td>
                   <td>

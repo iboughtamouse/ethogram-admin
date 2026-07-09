@@ -24,7 +24,6 @@ const LIST = {
           startTime: '14:00:00',
           endTime: '14:30:00',
           observerName: 'Alice',
-          mode: 'live',
           aviarySlug: 'sayyidas-cove',
           aviaryName: "Sayyida's Cove",
           slotCount: 2,
