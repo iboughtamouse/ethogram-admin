@@ -34,8 +34,8 @@ function AviaryPage() {
         onChanged={reload}
       />
       <p className="hint">
-        Edits here change the draft config — nothing observers see changes until
-        it is published.
+        Edits here change the draft — nothing observers see changes until you{' '}
+        <Link to="/publish">review and publish</Link>.
       </p>
 
       <SubjectsSection

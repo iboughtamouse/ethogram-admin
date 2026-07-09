@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import PublishPage from './PublishPage';
 import { fetchConfigDiff, publishConfig } from '../api';
@@ -33,7 +34,11 @@ beforeEach(() => {
 describe('PublishPage', () => {
   it('says there is nothing to publish when the draft is clean', async () => {
     fetchConfigDiff.mockResolvedValue(diff({ identical: true, changes: [] }));
-    render(<PublishPage />);
+    render(
+      <MemoryRouter>
+        <PublishPage />
+      </MemoryRouter>
+    );
 
     expect(
       await screen.findByText(/nothing to publish.*version 3/i)
@@ -58,7 +63,11 @@ describe('PublishPage', () => {
       },
     });
     const user = userEvent.setup();
-    render(<PublishPage />);
+    render(
+      <MemoryRouter>
+        <PublishPage />
+      </MemoryRouter>
+    );
 
     expect(
       await screen.findByText(/draft changes since version 3/i)
@@ -93,7 +102,11 @@ describe('PublishPage', () => {
       },
     });
     const user = userEvent.setup();
-    render(<PublishPage />);
+    render(
+      <MemoryRouter>
+        <PublishPage />
+      </MemoryRouter>
+    );
 
     const publish = await screen.findByRole('button', { name: 'Publish' });
     expect(publish).toBeDisabled();
@@ -123,7 +136,11 @@ describe('PublishPage', () => {
         ],
       })
     );
-    render(<PublishPage />);
+    render(
+      <MemoryRouter>
+        <PublishPage />
+      </MemoryRouter>
+    );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       /cannot be removed or renamed/
@@ -145,7 +162,11 @@ describe('PublishPage', () => {
       },
     });
     const user = userEvent.setup();
-    render(<PublishPage />);
+    render(
+      <MemoryRouter>
+        <PublishPage />
+      </MemoryRouter>
+    );
 
     await user.click(await screen.findByRole('button', { name: 'Publish' }));
 
@@ -172,7 +193,11 @@ describe('PublishPage', () => {
       },
     });
     const user = userEvent.setup();
-    render(<PublishPage />);
+    render(
+      <MemoryRouter>
+        <PublishPage />
+      </MemoryRouter>
+    );
 
     await user.click(await screen.findByRole('button', { name: 'Publish' }));
 

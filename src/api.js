@@ -236,6 +236,23 @@ export function publishConfig(body) {
   return apiFetch('/api/admin/config/publish', { method: 'POST', body });
 }
 
+// --- Stage 3E: admin allowlist management ---
+
+export function fetchAdmins() {
+  return apiFetch('/api/admin/admin-users');
+}
+
+export function createAdmin(body) {
+  return apiFetch('/api/admin/admin-users', { method: 'POST', body });
+}
+
+export function setAdminActive(id, isActive) {
+  return apiFetch(`/api/admin/admin-users/${encodeURIComponent(id)}`, {
+    method: 'PATCH',
+    body: { isActive },
+  });
+}
+
 // --- Stage 3D: diagram uploads + New Aviary ---
 
 export function mintDiagramUpload(body) {

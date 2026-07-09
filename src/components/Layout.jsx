@@ -31,6 +31,7 @@ function Layout({ user, onSignedOut, children }) {
         <NavLink to="/publish">Publish</NavLink>
         <NavLink to="/versions">Versions</NavLink>
         <NavLink to="/submissions">Submissions</NavLink>
+        <NavLink to="/admins">Admins</NavLink>
       </nav>
       <main>{children}</main>
     </div>

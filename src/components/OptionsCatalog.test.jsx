@@ -52,6 +52,7 @@ function renderCatalog() {
     <OptionsCatalog
       options={OPTIONS}
       aviarySlugs={['sayyidas-cove']}
+      aviaryNames={{ 'sayyidas-cove': "Sayyida's Cove" }}
       enablement={ENABLEMENT}
       onChanged={onChanged}
     />
@@ -66,8 +67,8 @@ describe('OptionsCatalog', () => {
     const user = userEvent.setup();
     renderCatalog();
 
-    await user.click(screen.getByText('Add animal'));
-    const form = screen.getByText('Add animal').closest('details');
+    await user.click(screen.getByText('Add an animal'));
+    const form = screen.getByText('Add an animal').closest('details');
     await user.type(within(form).getByLabelText('Value'), 'squirrel');
     await user.type(within(form).getByLabelText('Label'), 'Squirrel');
     await user.click(within(form).getByRole('button', { name: 'Add option' }));

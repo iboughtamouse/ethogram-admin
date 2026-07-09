@@ -24,7 +24,13 @@ export function useFetch(fetcher) {
       } else {
         setState({
           loading: false,
-          error: payload?.error || `Request failed (${status})`,
+          // status 0 = the fetch itself failed (offline / server unreachable);
+          // give staff a plain cause + recovery, not a bare number
+          error:
+            payload?.error ||
+            (status === 0
+              ? "Can't reach the server — check your internet connection and reload the page."
+              : `Something went wrong loading this page (error ${status}). Try reloading.`),
           data: null,
         });
       }

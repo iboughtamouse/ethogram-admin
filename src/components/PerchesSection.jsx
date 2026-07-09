@@ -173,6 +173,14 @@ function PerchesSection({ slug, perches, onChanged }) {
           </tr>
         </thead>
         <tbody>
+          {perches.length === 0 && (
+            <tr>
+              <td colSpan={4} className="empty">
+                No perches yet — add one below, or copy them from another aviary
+                when creating a new one.
+              </td>
+            </tr>
+          )}
           {perches.map((perch) => (
             <Fragment key={perch.value}>
               <tr className={perch.retired ? 'retired' : undefined}>
@@ -193,7 +201,7 @@ function PerchesSection({ slug, perches, onChanged }) {
                   </button>
                   <ConfirmButton
                     label="Remove"
-                    question={`Remove perch "${perch.value}"?`}
+                    question={`Remove perch "${perch.label}"?`}
                     onConfirm={() => handleRemove(perch)}
                   />
                 </td>

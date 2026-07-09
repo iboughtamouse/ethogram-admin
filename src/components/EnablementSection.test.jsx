@@ -95,10 +95,16 @@ describe('EnablementSection', () => {
     expect(screen.getByLabelText(/Rope/)).not.toBeChecked();
   });
 
-  it('saves the complete replace-set after toggling', async () => {
+  it('saves the complete replace-set after toggling, then announces "Saved."', async () => {
     setEnablement.mockResolvedValueOnce(ok({ slug: 'sayyidas-cove' }));
     const user = userEvent.setup();
-    renderSection();
+    const { rerender } = render(
+      <EnablementSection
+        slug="sayyidas-cove"
+        enabled={ENABLED}
+        onChanged={onChanged}
+      />
+    );
 
     const save = await screen.findByRole('button', {
       name: 'Save enabled vocabulary',
@@ -118,6 +124,25 @@ describe('EnablementSection', () => {
       animal_interaction: [],
     });
     expect(onChanged).toHaveBeenCalled();
+
+    // onChanged reloads the page, which re-delivers the now-saved enabled set;
+    // once the draft matches, the outcome is announced (not a silent success)
+    rerender(
+      <EnablementSection
+        slug="sayyidas-cove"
+        enabled={{ ...ENABLED, behaviors: ['flying', 'hopping'], object: [] }}
+        onChanged={onChanged}
+      />
+    );
+    expect(await screen.findByText('Saved.')).toBeInTheDocument();
+  });
+
+  it('announces unsaved changes after an edit', async () => {
+    const user = userEvent.setup();
+    renderSection();
+
+    await user.click(await screen.findByLabelText('Hopping'));
+    expect(screen.getByText('Unsaved changes.')).toBeInTheDocument();
   });
 
   it('re-disables save when a toggle is undone', async () => {

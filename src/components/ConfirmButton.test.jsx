@@ -44,13 +44,13 @@ describe('ConfirmButton', () => {
     expect(screen.getByRole('button', { name: 'Remove' })).toBeInTheDocument();
   });
 
-  it('moves focus to Confirm when armed (keyboard flow survives the swap)', async () => {
+  it('moves focus to the safe Cancel button when armed (a stray Enter cancels, not deletes)', async () => {
     const user = userEvent.setup();
     render(
       <ConfirmButton label="Remove" question="Sure?" onConfirm={vi.fn()} />
     );
 
     await user.click(screen.getByRole('button', { name: 'Remove' }));
-    expect(screen.getByRole('button', { name: 'Confirm' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
   });
 });

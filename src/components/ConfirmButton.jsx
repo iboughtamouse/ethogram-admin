@@ -9,26 +9,23 @@ import PropTypes from 'prop-types';
  * or block the JS thread, reads consistently to keyboard and screen-reader
  * users, and is drivable by DOM test harnesses.
  */
-function ConfirmButton({ label, question, onConfirm }) {
+function ConfirmButton({ label, question, onConfirm, disabled = false }) {
   const [armed, setArmed] = useState(false);
 
   if (!armed) {
     return (
-      <button type="button" onClick={() => setArmed(true)}>
+      <button type="button" disabled={disabled} onClick={() => setArmed(true)}>
         {label}
       </button>
     );
   }
 
   return (
-    <span className="confirm-arm">
+    <span className="confirm-arm" role="group" aria-label={question}>
       {question}
       <button
         type="button"
         className="danger"
-        // Focus moves here when the idle button is replaced, keeping keyboard
-        // flow intact (Escape-like bailout is the Cancel button beside it)
-        autoFocus
         onClick={() => {
           setArmed(false);
           onConfirm();
@@ -36,7 +33,10 @@ function ConfirmButton({ label, question, onConfirm }) {
       >
         Confirm
       </button>
-      <button type="button" onClick={() => setArmed(false)}>
+      {/* Focus lands on Cancel, not the destructive Confirm: a stray second
+          Enter (key-repeat while arming) then cancels rather than deletes.
+          Confirm is one Tab away. */}
+      <button type="button" autoFocus onClick={() => setArmed(false)}>
         Cancel
       </button>
     </span>
@@ -47,6 +47,8 @@ ConfirmButton.propTypes = {
   label: PropTypes.string.isRequired,
   question: PropTypes.string.isRequired,
   onConfirm: PropTypes.func.isRequired,
+  // Disables the trigger button (e.g. while a sibling action is in flight)
+  disabled: PropTypes.bool,
 };
 
 export default ConfirmButton;

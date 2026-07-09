@@ -66,6 +66,7 @@ CheckGrid.propTypes = {
 function EnablementSection({ slug, enabled, onChanged }) {
   const catalog = useFetch(fetchVocabulary);
   const [draft, setDraft] = useState(() => toSets(enabled));
+  const [justSaved, setJustSaved] = useState(false);
   const { busy, error: saveError, run } = useAction();
 
   // Resync only when the server-side CONTENT changed (our own save landing,
@@ -85,6 +86,7 @@ function EnablementSection({ slug, enabled, onChanged }) {
   const dirty = !sameSets(draft, toSets(enabled));
 
   function toggle(key, value) {
+    setJustSaved(false); // a new edit supersedes the last "Saved" confirmation
     setDraft((previous) => {
       const next = { ...previous, [key]: new Set(previous[key]) };
       if (next[key].has(value)) {
@@ -97,7 +99,7 @@ function EnablementSection({ slug, enabled, onChanged }) {
   }
 
   async function handleSave() {
-    await run(
+    const ok = await run(
       () =>
         setEnablement(
           slug,
@@ -107,6 +109,7 @@ function EnablementSection({ slug, enabled, onChanged }) {
         ),
       onChanged
     );
+    if (ok) setJustSaved(true);
   }
 
   return (
@@ -154,13 +157,20 @@ function EnablementSection({ slug, enabled, onChanged }) {
                 />
               </section>
             ))}
-            <button
-              type="button"
-              disabled={!dirty || busy}
-              onClick={handleSave}
-            >
-              {busy ? 'Saving…' : 'Save enabled vocabulary'}
-            </button>
+            <p className="save-row">
+              <button
+                type="button"
+                disabled={!dirty || busy}
+                onClick={handleSave}
+              >
+                {busy ? 'Saving…' : 'Save enabled vocabulary'}
+              </button>
+              {/* Live region so the outcome is announced — the button just
+                  greying out is not a perceivable "it worked" signal */}
+              <span role="status">
+                {dirty ? 'Unsaved changes.' : justSaved ? 'Saved.' : ''}
+              </span>
+            </p>
             {saveError && <p role="alert">{saveError}</p>}
           </>
         )}

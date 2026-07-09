@@ -7,6 +7,9 @@ import {
   logout,
   onUnauthorized,
   uploadToBucket,
+  fetchAdmins,
+  createAdmin,
+  setAdminActive,
 } from './api';
 
 function jsonResponse(payload, { ok = true, status = 200 } = {}) {
@@ -185,5 +188,30 @@ describe('uploadToBucket', () => {
       new File(['x'], 'd')
     );
     expect(result).toEqual({ ok: false, status: 0 });
+  });
+});
+
+describe('admin allowlist client', () => {
+  it('lists admins with a GET', async () => {
+    await fetchAdmins();
+    const [url, options] = fetch.mock.calls[0];
+    expect(url).toBe('http://localhost:3000/api/admin/admin-users');
+    expect(options.method).toBe('GET');
+  });
+
+  it('adds an admin with a POST body', async () => {
+    await createAdmin({ email: 'a@b.co', displayName: 'A' });
+    const [url, options] = fetch.mock.calls[0];
+    expect(url).toBe('http://localhost:3000/api/admin/admin-users');
+    expect(options.method).toBe('POST');
+    expect(options.body).toBe('{"email":"a@b.co","displayName":"A"}');
+  });
+
+  it('toggles is_active with a PATCH to the id, encoding it', async () => {
+    await setAdminActive('the id', false);
+    const [url, options] = fetch.mock.calls[0];
+    expect(url).toBe('http://localhost:3000/api/admin/admin-users/the%20id');
+    expect(options.method).toBe('PATCH');
+    expect(options.body).toBe('{"isActive":false}');
   });
 });

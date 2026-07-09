@@ -11,35 +11,46 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
+const ok = (versions) => ({
+  ok: true,
+  status: 200,
+  payload: { success: true, data: { versions } },
+});
+
 describe('VersionsPage', () => {
-  it('lists published versions with notes', async () => {
-    fetchVersions.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      payload: {
-        success: true,
-        data: {
-          versions: [
-            {
-              version: 3,
-              publishedAt: '2026-07-07T12:00:00Z',
-              notes: 'R2 perch diagrams',
-            },
-            {
-              version: 2,
-              publishedAt: '2026-07-06T12:00:00Z',
-              notes: 'Juveniles',
-            },
-            { version: 1, publishedAt: '2026-07-06T10:00:00Z', notes: null },
-          ],
+  it('lists published versions with notes and who published them', async () => {
+    fetchVersions.mockResolvedValueOnce(
+      ok([
+        {
+          version: 3,
+          publishedAt: '2026-07-07T12:00:00Z',
+          notes: 'R2 perch diagrams',
+          publishedBy: 'Poppy',
         },
-      },
-    });
+        {
+          version: 1,
+          publishedAt: '2026-07-06T10:00:00Z',
+          notes: null,
+          publishedBy: null,
+        },
+      ])
+    );
     render(<VersionsPage />);
 
     expect(await screen.findByText('R2 perch diagrams')).toBeInTheDocument();
-    const rows = screen.getAllByRole('row');
-    expect(rows).toHaveLength(4); // header + 3 versions
+    // Attribution column: display name, and 'Engineering' for a NULL published_by
+    expect(screen.getByText('Poppy')).toBeInTheDocument();
+    expect(screen.getByText('Engineering')).toBeInTheDocument();
     expect(screen.getByText('—')).toBeInTheDocument(); // null notes placeholder
+  });
+
+  it('shows a plain message when nothing has been published', async () => {
+    fetchVersions.mockResolvedValueOnce(ok([]));
+    render(<VersionsPage />);
+
+    expect(
+      await screen.findByText(/no config has been published yet/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 });
