@@ -29,6 +29,12 @@ function PublishPage() {
     if (notes.trim()) body.notes = notes.trim();
     if (confirmFlags) body.confirmFlagChanges = true;
     if (confirmRows) body.confirmRowMapChanges = true;
+    // FU-9: send the fingerprint the diff below was computed from, so the
+    // server 409s if the draft moved since (another admin, or a second tab).
+    // The reload() after publish then re-fetches a fresh diff + fingerprint,
+    // so a rejected publish shows the current changes to re-review. Guarded so
+    // an older API that doesn't return a fingerprint simply skips the check.
+    if (data.fingerprint) body.expectedFingerprint = data.fingerprint;
     await run(
       () => publishConfig(body),
       (result) => {
