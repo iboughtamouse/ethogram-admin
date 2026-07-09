@@ -96,7 +96,7 @@ describe('SubjectsSection', () => {
     const user = userEvent.setup();
     renderSection();
 
-    await user.click(screen.getByRole('button', { name: 'Departed…' }));
+    await user.click(screen.getByRole('button', { name: 'Record departure…' }));
     fireEvent.change(screen.getByLabelText('Departure date'), {
       target: { value: '2026-07-07' },
     });
@@ -133,9 +133,9 @@ describe('SubjectsSection', () => {
     renderSection();
     // One open episode (Sayyida) → one of each button; the departed juvenile
     // only gets Remove
-    expect(screen.getAllByRole('button', { name: 'Departed…' })).toHaveLength(
-      1
-    );
+    expect(
+      screen.getAllByRole('button', { name: 'Record departure…' })
+    ).toHaveLength(1);
     expect(
       screen.getAllByRole('button', { name: 'Change type…' })
     ).toHaveLength(1);

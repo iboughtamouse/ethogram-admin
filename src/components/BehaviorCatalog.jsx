@@ -320,6 +320,7 @@ function BehaviorCatalog({
   groups,
   behaviors,
   aviarySlugs,
+  aviaryNames,
   enablement,
   onChanged,
 }) {
@@ -363,7 +364,9 @@ function BehaviorCatalog({
                   <th>Requires</th>
                   <th>Excel row</th>
                   {aviarySlugs.map((slug) => (
-                    <th key={slug}>{slug}</th>
+                    <th key={slug} title={slug}>
+                      {aviaryNames[slug] ?? slug}
+                    </th>
                   ))}
                   <th>Actions</th>
                 </tr>
@@ -447,6 +450,7 @@ BehaviorCatalog.propTypes = {
   groups: PropTypes.arrayOf(groupShape).isRequired,
   behaviors: PropTypes.arrayOf(behaviorShape).isRequired,
   aviarySlugs: PropTypes.arrayOf(PropTypes.string).isRequired,
+  aviaryNames: PropTypes.objectOf(PropTypes.string).isRequired,
   enablement: PropTypes.object.isRequired,
   onChanged: PropTypes.func.isRequired,
 };

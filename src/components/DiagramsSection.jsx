@@ -123,7 +123,8 @@ function AddDiagramForm({ slug, diagrams, onDone }) {
     setBusy(false);
     if (!attached.ok) {
       setError(
-        attached.payload?.error || 'Uploaded, but attaching the diagram failed.'
+        attached.payload?.error ||
+          'The image uploaded but could not be added to the list — press Upload again to retry (it will not create a duplicate).'
       );
       return;
     }
@@ -216,19 +217,23 @@ function DiagramsSection({ slug, diagrams, onChanged }) {
               <button type="button" onClick={() => setRelabeling(index)}>
                 Relabel…
               </button>
+              {/* Spatial, not temporal — diagrams are views (NE/SW), not a
+                  timeline. Per-diagram aria-label so each button is distinct. */}
               <button
                 type="button"
                 disabled={index === 0}
+                aria-label={`Move "${diagram.label}" left`}
                 onClick={() => handleMove(index, -1)}
               >
-                ← Earlier
+                ← Move left
               </button>
               <button
                 type="button"
                 disabled={index === diagrams.length - 1}
+                aria-label={`Move "${diagram.label}" right`}
                 onClick={() => handleMove(index, 1)}
               >
-                Later →
+                Move right →
               </button>
               <ConfirmButton
                 label="Remove"

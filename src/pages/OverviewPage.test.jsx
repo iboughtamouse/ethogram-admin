@@ -88,7 +88,7 @@ describe('OverviewPage', () => {
     );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      /request failed/i
+      /something went wrong loading this page/i
     );
   });
 });

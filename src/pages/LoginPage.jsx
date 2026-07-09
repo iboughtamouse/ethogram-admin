@@ -34,6 +34,13 @@ function LoginPage() {
           If <strong>{sentTo}</strong> is on the admin list, a sign-in link is
           on its way. It expires in 15 minutes — check your inbox.
         </p>
+        <p className="hint">
+          No email after a minute? It may not be on the admin list, or check
+          spam.
+        </p>
+        <button type="button" onClick={() => setState('idle')}>
+          Use a different email
+        </button>
       </main>
     );
   }

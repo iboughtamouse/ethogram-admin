@@ -34,8 +34,9 @@ function ActivationControl({ slug, isActive, onChanged }) {
       ) : (
         <p>
           <span className="badge badge-warn">Inactive</span> Observers
-          can&apos;t see this aviary. Finish setting it up (perches, diagrams,
-          subjects, vocabulary), then activate and publish.
+          can&apos;t see this aviary. Finish setting it up (subjects, diagrams,
+          perches, and vocabulary — in the order below), then activate and
+          publish.
           <button type="button" onClick={toggle} disabled={busy}>
             {busy ? 'Activating…' : 'Activate'}
           </button>

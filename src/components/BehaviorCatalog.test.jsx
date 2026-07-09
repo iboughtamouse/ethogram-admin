@@ -85,6 +85,7 @@ function renderCatalog() {
       groups={GROUPS}
       behaviors={BEHAVIORS}
       aviarySlugs={['sayyidas-cove']}
+      aviaryNames={{ 'sayyidas-cove': "Sayyida's Cove" }}
       enablement={ENABLEMENT}
       onChanged={onChanged}
     />
