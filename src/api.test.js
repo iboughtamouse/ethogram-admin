@@ -10,6 +10,7 @@ import {
   fetchAdmins,
   createAdmin,
   setAdminActive,
+  deleteAviary,
 } from './api';
 
 function jsonResponse(payload, { ok = true, status = 200 } = {}) {
@@ -213,5 +214,16 @@ describe('admin allowlist client', () => {
     expect(url).toBe('http://localhost:3000/api/admin/admin-users/the%20id');
     expect(options.method).toBe('PATCH');
     expect(options.body).toBe('{"isActive":false}');
+  });
+});
+
+describe('deleteAviary', () => {
+  it('DELETEs the slug, encoding it', async () => {
+    await deleteAviary('kestrel corner');
+    const [url, options] = fetch.mock.calls[0];
+    expect(url).toBe(
+      'http://localhost:3000/api/admin/aviaries/kestrel%20corner'
+    );
+    expect(options.method).toBe('DELETE');
   });
 });
