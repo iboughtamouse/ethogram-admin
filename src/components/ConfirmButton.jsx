@@ -9,12 +9,12 @@ import PropTypes from 'prop-types';
  * or block the JS thread, reads consistently to keyboard and screen-reader
  * users, and is drivable by DOM test harnesses.
  */
-function ConfirmButton({ label, question, onConfirm }) {
+function ConfirmButton({ label, question, onConfirm, disabled = false }) {
   const [armed, setArmed] = useState(false);
 
   if (!armed) {
     return (
-      <button type="button" onClick={() => setArmed(true)}>
+      <button type="button" disabled={disabled} onClick={() => setArmed(true)}>
         {label}
       </button>
     );
@@ -47,6 +47,8 @@ ConfirmButton.propTypes = {
   label: PropTypes.string.isRequired,
   question: PropTypes.string.isRequired,
   onConfirm: PropTypes.func.isRequired,
+  // Disables the trigger button (e.g. while a sibling action is in flight)
+  disabled: PropTypes.bool,
 };
 
 export default ConfirmButton;

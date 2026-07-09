@@ -67,7 +67,7 @@ AddAdminForm.propTypes = {
  */
 function AdminsPage({ currentUser }) {
   const { loading, error, data, reload } = useFetch(fetchAdmins);
-  const { error: actionError, run } = useAction();
+  const { busy, error: actionError, run } = useAction();
 
   async function setActive(id, isActive) {
     await run(() => setAdminActive(id, isActive), reload);
@@ -124,11 +124,13 @@ function AdminsPage({ currentUser }) {
                     <ConfirmButton
                       label="Remove"
                       question={`Remove ${admin.displayName}'s access?`}
+                      disabled={busy}
                       onConfirm={() => setActive(admin.id, false)}
                     />
                   ) : (
                     <button
                       type="button"
+                      disabled={busy}
                       onClick={() => setActive(admin.id, true)}
                     >
                       Reactivate
