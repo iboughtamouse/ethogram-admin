@@ -248,6 +248,22 @@ button.danger:hover:not(:disabled) {
   background: #8a2f22;
 }
 
+td.empty {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.save-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.save-row [role='status'] {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 .diagrams .actions {
   margin-top: 0.35rem;
 }

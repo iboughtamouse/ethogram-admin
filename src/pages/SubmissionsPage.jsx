@@ -50,6 +50,7 @@ function SubmissionsPage() {
           <input
             type="text"
             value={draft.aviary}
+            placeholder="name or slug"
             onChange={updateDraft('aviary')}
           />
         </label>
@@ -58,7 +59,10 @@ function SubmissionsPage() {
 
       {loading && <p>Loading…</p>}
       {error && <p role="alert">{error}</p>}
-      {data && (
+      {data && data.items.length === 0 && (
+        <p>No submissions match these filters.</p>
+      )}
+      {data && data.items.length > 0 && (
         <>
           <p>
             Showing {data.items.length} of {data.total}{' '}

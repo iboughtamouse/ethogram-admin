@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchConfigDiff, publishConfig } from '../api';
 import { useFetch } from '../useFetch';
 import { useAction } from '../useAction';
@@ -66,6 +67,10 @@ function PublishPage() {
               <li key={change}>{change}</li>
             ))}
           </ul>
+          <p>
+            It&apos;s live for observers now. See it in the{' '}
+            <Link to="/versions">version history</Link>.
+          </p>
         </section>
       )}
 
@@ -130,7 +135,9 @@ function PublishPage() {
                   unaffected).
                 </label>
               )}
-              <label htmlFor="publish-notes">Notes (optional)</label>
+              <label htmlFor="publish-notes">
+                Notes (optional, but a line here saves the next person guessing)
+              </label>
               <textarea
                 id="publish-notes"
                 rows={3}

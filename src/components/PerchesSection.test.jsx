@@ -115,7 +115,7 @@ describe('PerchesSection', () => {
 
     // In-app confirm (SM-1): arm, then confirm
     await user.click(screen.getAllByRole('button', { name: 'Remove' })[0]);
-    expect(screen.getByText('Remove perch "12"?')).toBeInTheDocument();
+    expect(screen.getByText('Remove perch "Perch 12"?')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Confirm' }));
 
     expect(deletePerch).toHaveBeenCalledWith('sayyidas-cove', '12');

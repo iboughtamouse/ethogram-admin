@@ -1,7 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import VocabularyPage from './VocabularyPage';
 import { fetchVocabulary } from '../api';
+
+// The page links to /publish, so it needs a router context
+function renderPage() {
+  return render(
+    <MemoryRouter>
+      <VocabularyPage />
+    </MemoryRouter>
+  );
+}
 
 vi.mock('../api', () => ({
   fetchVocabulary: vi.fn(),
@@ -81,7 +91,7 @@ beforeEach(() => {
 describe('VocabularyPage', () => {
   it('renders the grouped catalog with flags, retirement, and the enablement matrix', async () => {
     fetchVocabulary.mockResolvedValueOnce(VOCAB);
-    render(<VocabularyPage />);
+    renderPage();
 
     expect(
       await screen.findByRole('heading', { name: 'Feeding' })

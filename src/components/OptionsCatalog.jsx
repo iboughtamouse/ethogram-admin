@@ -108,7 +108,13 @@ AddOptionForm.propTypes = {
  * inline label editing, retire/unretire, and removal of never-published
  * drafts. Values are wire identities — label fixes only, no renames.
  */
-function OptionsCatalog({ options, aviarySlugs, enablement, onChanged }) {
+function OptionsCatalog({
+  options,
+  aviarySlugs,
+  aviaryNames,
+  enablement,
+  onChanged,
+}) {
   const [editing, setEditing] = useState(null); // `${kind}/${value}`
   const { error: actionError, run: runAction } = useAction();
 
@@ -142,7 +148,9 @@ function OptionsCatalog({ options, aviarySlugs, enablement, onChanged }) {
                 <th>Label</th>
                 <th>Value</th>
                 {aviarySlugs.map((slug) => (
-                  <th key={slug}>{slug}</th>
+                  <th key={slug} title={slug}>
+                    {aviaryNames[slug] ?? slug}
+                  </th>
                 ))}
                 <th>Actions</th>
               </tr>
@@ -202,7 +210,9 @@ function OptionsCatalog({ options, aviarySlugs, enablement, onChanged }) {
             </tbody>
           </table>
           <details>
-            <summary>Add {kindLabel.toLowerCase().replace(/s$/, '')}</summary>
+            <summary>
+              Add an {kindLabel.toLowerCase().replace(/s$/, '')}
+            </summary>
             <AddOptionForm kind={kind} onDone={onChanged} />
           </details>
         </section>
@@ -214,6 +224,7 @@ function OptionsCatalog({ options, aviarySlugs, enablement, onChanged }) {
 OptionsCatalog.propTypes = {
   options: PropTypes.objectOf(PropTypes.arrayOf(optionShape)).isRequired,
   aviarySlugs: PropTypes.arrayOf(PropTypes.string).isRequired,
+  aviaryNames: PropTypes.objectOf(PropTypes.string).isRequired,
   enablement: PropTypes.object.isRequired,
   onChanged: PropTypes.func.isRequired,
 };

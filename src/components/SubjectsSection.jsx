@@ -223,6 +223,13 @@ function SubjectsSection({ slug, subjects, onChanged }) {
           </tr>
         </thead>
         <tbody>
+          {subjects.length === 0 && (
+            <tr>
+              <td colSpan={7} className="empty">
+                No birds recorded yet — add one below.
+              </td>
+            </tr>
+          )}
           {subjects.map((subject) => (
             <Fragment key={subject.id}>
               <tr>
@@ -247,7 +254,7 @@ function SubjectsSection({ slug, subjects, onChanged }) {
                           setAction({ id: subject.id, kind: 'depart' })
                         }
                       >
-                        Departed…
+                        Record departure…
                       </button>
                       <button
                         type="button"
