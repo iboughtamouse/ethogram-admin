@@ -1,11 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
 import AviaryPage from './AviaryPage';
-import { fetchAviary, fetchVocabulary } from '../api';
+import { fetchAviary, fetchVocabulary, deleteAviary } from '../api';
 
 vi.mock('../api', () => ({
   fetchAviary: vi.fn(),
+  deleteAviary: vi.fn(),
   // Imported by the editing sections the page composes
   createSubject: vi.fn(),
   updateSubject: vi.fn(),
@@ -21,6 +23,16 @@ vi.mock('../api', () => ({
   uploadToBucket: vi.fn(),
   updateAviary: vi.fn(),
 }));
+
+// An inactive (draft) variant of the fixture — the delete affordance only
+// appears for inactive aviaries
+const inactive = (payload) => ({
+  ...payload,
+  payload: {
+    ...payload.payload,
+    data: { ...payload.payload.data, isActive: false },
+  },
+});
 
 const AVIARY = {
   ok: true,
@@ -80,6 +92,7 @@ function renderAt(slug) {
     <MemoryRouter initialEntries={[`/aviaries/${slug}`]}>
       <Routes>
         <Route path="/aviaries/:slug" element={<AviaryPage />} />
+        <Route path="/" element={<div>Overview stub</div>} />
       </Routes>
     </MemoryRouter>
   );
@@ -144,5 +157,59 @@ describe('AviaryPage', () => {
     expect(
       screen.getByRole('link', { name: /back to overview/i })
     ).toBeInTheDocument();
+  });
+
+  it('offers delete only for an inactive draft, not an active aviary', async () => {
+    fetchAviary.mockResolvedValueOnce(AVIARY); // isActive: true
+    renderAt('sayyidas-cove');
+    await screen.findByRole('heading', { name: /sayyida's cove/i });
+    expect(
+      screen.queryByRole('button', { name: /delete this draft aviary/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it('deletes an inactive draft after confirmation and returns to the overview', async () => {
+    fetchAviary.mockResolvedValueOnce(inactive(AVIARY));
+    deleteAviary.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      payload: { success: true, data: { slug: 'sayyidas-cove' } },
+    });
+    const user = userEvent.setup();
+    renderAt('sayyidas-cove');
+
+    await user.click(
+      await screen.findByRole('button', { name: /delete this draft aviary/i })
+    );
+    expect(deleteAviary).not.toHaveBeenCalled(); // armed, not fired
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
+
+    expect(deleteAviary).toHaveBeenCalledWith('sayyidas-cove');
+    expect(await screen.findByText('Overview stub')).toBeInTheDocument();
+  });
+
+  it("surfaces the server's refusal and stays put when delete is blocked", async () => {
+    fetchAviary.mockResolvedValueOnce(inactive(AVIARY));
+    deleteAviary.mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      payload: {
+        success: false,
+        error:
+          "This aviary is in a published config version and can't be deleted",
+      },
+    });
+    const user = userEvent.setup();
+    renderAt('sayyidas-cove');
+
+    await user.click(
+      await screen.findByRole('button', { name: /delete this draft aviary/i })
+    );
+    await user.click(screen.getByRole('button', { name: 'Confirm' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /published config version/
+    );
+    expect(screen.queryByText('Overview stub')).not.toBeInTheDocument();
   });
 });
