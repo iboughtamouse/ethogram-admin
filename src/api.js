@@ -131,6 +131,14 @@ export function updateAviary(slug, body) {
   });
 }
 
+// FU-8: hard-delete a never-published draft aviary. The API 409s if the slug
+// is in any published version (deactivate those instead) or has observations.
+export function deleteAviary(slug) {
+  return apiFetch(`/api/admin/aviaries/${encodeURIComponent(slug)}`, {
+    method: 'DELETE',
+  });
+}
+
 export function createPerch(slug, body) {
   return apiFetch(`/api/admin/aviaries/${encodeURIComponent(slug)}/perches`, {
     method: 'POST',

@@ -10,6 +10,8 @@ vi.mock('../api', () => ({
   publishConfig: vi.fn(),
 }));
 
+const FINGERPRINT = 'abc123def456abc123def456abc12300';
+
 const diff = (overrides = {}) => ({
   ok: true,
   status: 200,
@@ -17,6 +19,7 @@ const diff = (overrides = {}) => ({
     success: true,
     data: {
       identical: false,
+      fingerprint: FINGERPRINT,
       latestVersion: 3,
       changes: ['Behavior added: "Stretching" (stretching).'],
       flagChanges: [],
@@ -79,7 +82,11 @@ describe('PublishPage', () => {
     await user.type(screen.getByLabelText(/notes/i), '  new behavior  ');
     await user.click(screen.getByRole('button', { name: 'Publish' }));
 
-    expect(publishConfig).toHaveBeenCalledWith({ notes: 'new behavior' });
+    // FU-9: the fingerprint the diff was computed from rides along
+    expect(publishConfig).toHaveBeenCalledWith({
+      notes: 'new behavior',
+      expectedFingerprint: FINGERPRINT,
+    });
     expect(await screen.findByRole('status')).toHaveTextContent(
       'Published version 4'
     );
@@ -124,6 +131,7 @@ describe('PublishPage', () => {
     expect(publishConfig).toHaveBeenCalledWith({
       confirmFlagChanges: true,
       confirmRowMapChanges: true,
+      expectedFingerprint: FINGERPRINT,
     });
   });
 
@@ -206,5 +214,88 @@ describe('PublishPage', () => {
     expect(
       await screen.findByLabelText(/changed which extra fields they need/i)
     ).toBeInTheDocument();
+  });
+
+  it('clears a confirmation tick when a rejected publish reloads the diff', async () => {
+    // A flag confirmation is required; the publish is rejected (draft moved)
+    // and the reloaded diff still requires it — the earlier tick must NOT
+    // survive to re-enable Publish without a fresh confirmation.
+    fetchConfigDiff
+      .mockResolvedValueOnce(diff({ flagChanges: ['flying'] }))
+      .mockResolvedValueOnce(diff({ flagChanges: ['flying'] }));
+    publishConfig.mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      payload: {
+        success: false,
+        error:
+          'The draft changed since you opened this review — reload the diff and check it again before publishing.',
+      },
+    });
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <PublishPage />
+      </MemoryRouter>
+    );
+
+    await user.click(
+      await screen.findByLabelText(/changed which extra fields they need/i)
+    );
+    const publish = screen.getByRole('button', { name: 'Publish' });
+    expect(publish).toBeEnabled();
+    await user.click(publish);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /draft changed/i
+    );
+    // Tick cleared, Publish disabled again until re-confirmed
+    expect(
+      screen.getByLabelText(/changed which extra fields they need/i)
+    ).not.toBeChecked();
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeDisabled();
+  });
+
+  it('re-reviews the moved draft when the fingerprint is stale (FU-9)', async () => {
+    // The draft moved after this page's diff was rendered: publish 409s, and
+    // the reload surfaces the newer change list to re-review.
+    fetchConfigDiff
+      .mockResolvedValueOnce(diff({ changes: ['Behavior added: "A" (a).'] }))
+      .mockResolvedValueOnce(
+        diff({
+          fingerprint: 'ffffffffffffffffffffffffffffffff',
+          changes: ['Behavior added: "A" (a).', 'Behavior added: "B" (b).'],
+        })
+      );
+    publishConfig.mockResolvedValueOnce({
+      ok: false,
+      status: 409,
+      payload: {
+        success: false,
+        error:
+          'The draft changed since you opened this review — reload the diff and check it again before publishing.',
+      },
+    });
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <PublishPage />
+      </MemoryRouter>
+    );
+
+    await user.click(await screen.findByRole('button', { name: 'Publish' }));
+
+    // The first publish carried the stale fingerprint
+    expect(publishConfig).toHaveBeenCalledWith({
+      expectedFingerprint: FINGERPRINT,
+    });
+    // The server's message shows and the diff reloaded to the moved draft
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /draft changed/i
+    );
+    expect(
+      await screen.findByText('Behavior added: "B" (b).')
+    ).toBeInTheDocument();
+    expect(fetchConfigDiff).toHaveBeenCalledTimes(2);
   });
 });
