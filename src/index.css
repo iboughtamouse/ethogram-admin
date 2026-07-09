@@ -253,6 +253,10 @@ td.empty {
   font-style: italic;
 }
 
+.muted {
+  color: var(--muted);
+}
+
 .save-row {
   display: flex;
   align-items: center;
