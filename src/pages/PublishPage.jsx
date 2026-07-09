@@ -40,14 +40,17 @@ function PublishPage() {
       (result) => {
         setPublished(result);
         setNotes('');
-        setConfirmFlags(false);
-        setConfirmRows(false);
       }
     );
     // Refresh the review either way: on success the diff is clean again; on
     // failure the server may know about draft changes this page's mount-time
     // diff didn't (e.g. a confirmation it now requires) — without the
-    // refresh the needed checkbox never renders and the page dead-ends
+    // refresh the needed checkbox never renders and the page dead-ends.
+    // Clear the confirmations unconditionally: whether the publish succeeded or
+    // was rejected (e.g. a stale-fingerprint 409), the refreshed diff must be
+    // re-confirmed rather than riding a tick made against the old change set.
+    setConfirmFlags(false);
+    setConfirmRows(false);
     reload();
   }
 
