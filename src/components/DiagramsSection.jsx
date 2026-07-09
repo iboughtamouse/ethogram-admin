@@ -218,11 +218,13 @@ function DiagramsSection({ slug, diagrams, onChanged }) {
                 Relabel…
               </button>
               {/* Spatial, not temporal — diagrams are views (NE/SW), not a
-                  timeline. Per-diagram aria-label so each button is distinct. */}
+                  timeline. Per-diagram aria-label so each button is distinct;
+                  the visible words lead so speech-input ("move left") matches
+                  the accessible name (WCAG 2.5.3 Label in Name). */}
               <button
                 type="button"
                 disabled={index === 0}
-                aria-label={`Move "${diagram.label}" left`}
+                aria-label={`Move left, ${diagram.label}`}
                 onClick={() => handleMove(index, -1)}
               >
                 ← Move left
@@ -230,7 +232,7 @@ function DiagramsSection({ slug, diagrams, onChanged }) {
               <button
                 type="button"
                 disabled={index === diagrams.length - 1}
-                aria-label={`Move "${diagram.label}" right`}
+                aria-label={`Move right, ${diagram.label}`}
                 onClick={() => handleMove(index, 1)}
               >
                 Move right →

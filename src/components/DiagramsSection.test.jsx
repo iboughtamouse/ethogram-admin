@@ -199,7 +199,7 @@ describe('DiagramsSection', () => {
     renderSection();
 
     await user.click(
-      screen.getAllByRole('button', { name: /Move .* right/ })[0]
+      screen.getAllByRole('button', { name: /^Move right/ })[0]
     );
 
     expect(setDiagrams).toHaveBeenCalledWith('sayyidas-cove', {
