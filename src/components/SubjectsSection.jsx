@@ -8,6 +8,7 @@ import {
 } from '../api';
 import { useAction } from '../useAction';
 import { SUBJECT_TYPES, SUBJECT_TYPE_LABELS } from '../constants';
+import ConfirmButton from './ConfirmButton';
 
 const subjectShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
@@ -199,14 +200,9 @@ function SubjectsSection({ slug, subjects, onChanged }) {
     onChanged();
   }
 
+  // The published-episode case doesn't need pre-warning here: the API refuses
+  // it with a friendly "record a departure instead" message shown above
   async function handleRemove(subject) {
-    if (
-      !window.confirm(
-        `Remove the draft episode for "${subject.name}"? Episodes already in a published config can't be removed — record a departure instead.`
-      )
-    ) {
-      return;
-    }
     await runRemove(() => deleteSubject(subject.id), onChanged);
   }
 
@@ -263,9 +259,11 @@ function SubjectsSection({ slug, subjects, onChanged }) {
                       </button>
                     </>
                   )}
-                  <button type="button" onClick={() => handleRemove(subject)}>
-                    Remove
-                  </button>
+                  <ConfirmButton
+                    label="Remove"
+                    question={`Remove ${subject.name}'s episode?`}
+                    onConfirm={() => handleRemove(subject)}
+                  />
                 </td>
               </tr>
               {action?.id === subject.id && (

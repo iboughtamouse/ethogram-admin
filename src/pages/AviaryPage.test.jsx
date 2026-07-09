@@ -16,6 +16,10 @@ vi.mock('../api', () => ({
   deletePerch: vi.fn(),
   fetchVocabulary: vi.fn(),
   setEnablement: vi.fn(),
+  mintDiagramUpload: vi.fn(),
+  setDiagrams: vi.fn(),
+  uploadToBucket: vi.fn(),
+  updateAviary: vi.fn(),
 }));
 
 const AVIARY = {
